@@ -1,6 +1,6 @@
 C = gcc
 CFLAGS = -Wall -Wextra -std=c99
-TARGET = sed_simplified
+TARGET = redactor
 OBJECTS = main.o red.o
 
 .PHONY: all clean test

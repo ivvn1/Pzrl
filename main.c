@@ -1,4 +1,4 @@
-nclude "sed.h"
+#include "red.h"
 #include <stdio.h>
 #include <stdlib.h>
 
