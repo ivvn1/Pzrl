@@ -1,7 +1,7 @@
-C = gcc
-CFLAGS = -Wall -Wextra -std=c99
-TARGET = redactor
-OBJECTS = main.o red.o
+ CC = gcc
+ CFLAGS = -Wall -Wextra -std=c99
+ TARGET = redactor
+ OBJECTS = main.o red.o
 
 .PHONY: all clean test
 
@@ -21,4 +21,4 @@ test: $(TARGET)
 		./$(TARGET) input.txt 's/old/new/'
 			./$(TARGET) input.txt '/new/d'
 				./$(TARGET) input.txt 's/^/prefix /'
-					./$(TARGET) input.txt 's/$/ suffix/'
+					./$(TARGET) input.txt 's/ suffix/new_suffix/'

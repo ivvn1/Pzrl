@@ -19,12 +19,25 @@ regex_t regex;
 			char *pattern, *replacement;
 
 if (strncmp(operation, "s/", 2) == 0) {
-	pattern = strtok((char *)operation + 2, "/");
-		replacement = strtok(NULL, "/");
-			if (!replacement || regcomp(&regex, pattern, REG_EXTENDED) != 0) {
-				fprintf(stderr, "Invalid substitution syntax.\n");
-					fclose(file);
-						return -1;
+	        char *start = strchr(operation + 2, '/');
+		        char *end = start ? strchr(start + 1, '/') : NULL;
+
+if (!start || !end || end == start + 1) {
+	fprintf(stderr, "Invalid substitution syntax.\n");
+		fclose(file);
+			return -1;
+}
+
+*start = '\0';
+*end = '\0';
+
+pattern = (char *)(operation + 2);
+	replacement = start + 1;
+
+if (regcomp(&regex, pattern, REG_EXTENDED) != 0) {
+	fprintf(stderr, "Invalid regex pattern.\n");
+		fclose(file);
+			return -1;
 }
 
 while (fgets(buffer, sizeof(buffer), file)) {
@@ -43,18 +56,18 @@ strcat(result, start);
 regfree(&regex);
 
 } else if (strncmp(operation, "/", 1) == 0 && strstr(operation, "/d")) {
-	pattern = strtok((char *)operation + 1, "/");
-		if (regcomp(&regex, pattern, REG_EXTENDED) != 0) {
-			fprintf(stderr, "Invalid deletion syntax.\n");
-				fclose(file);
-					return -1;
+pattern = strtok((char *)operation + 1, "/");
+	if (regcomp(&regex, pattern, REG_EXTENDED) != 0) {
+		fprintf(stderr, "Invalid deletion syntax.\n");
+			fclose(file);
+				return -1;
 }
 
 while (fgets(buffer, sizeof(buffer), file)) {
 	if (regexec(&regex, buffer, 0, NULL, 0) != 0) {
 		strcat(new_content, buffer);
-	}
 }
+	}
 regfree(&regex);
 
 } else if (strncmp(operation, "s/^", 3) == 0) {
@@ -62,19 +75,19 @@ regfree(&regex);
 		while (fgets(buffer, sizeof(buffer), file)) {
 			strcat(new_content, replacement);
 				strcat(new_content, buffer);
- 	}	
+}
 
 } else if (strncmp(operation, "s/$", 3) == 0) {
 	replacement = strtok((char *)operation + 3, "/");
 		while (fgets(buffer, sizeof(buffer), file)) {
 			buffer[strcspn(buffer, "\n")] = 0;
 				strcat(new_content, buffer);
-					strcat(new_content, replacement);
-						strcat(new_content, "\n");
-				
-	}
+					strcat(new_content, replacement);	
+						strcat(new_content, "\n");	
+}
 
-} else {	
+
+} else {
 	fprintf(stderr, "Invalid operation.\n");
 		fclose(file);
 			return -1;
@@ -82,7 +95,6 @@ regfree(&regex);
 
 freopen(file_path, "w", file);
 	fputs(new_content, file);
-		fclose(file);
-
-return 0;
+	    fclose(file);
+	        return 0;
 }
